@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import AirsigmetChart from "src/components/AirsigmetChart";
 
 function App() {
   const [icao, setIcao] = useState("");
@@ -82,6 +83,26 @@ function App() {
         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word", marginTop: 20 }}>
           {JSON.stringify(data, null, 2)}
         </pre>
+      )}
+    </div>
+  );
+}
+
+return (
+    <div style={{ maxWidth: 700, margin: "40px auto", padding: 20, fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#333" }}>
+      {/* Existing UI */}
+      
+      {/* Fetch Button and Error message */}
+
+      {/* Show JSON data or D3 visualization */}
+      {dataType === "airsigmet" && data ? (
+        <AirsigmetChart data={data} />
+      ) : (
+        data && (
+          <pre style={{ marginTop: 20, padding: 20, background: "#f9f9f9", borderRadius: 8, whiteSpace: "pre-wrap", wordWrap: "break-word", fontFamily: "monospace", fontSize: 14 }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )
       )}
     </div>
   );
