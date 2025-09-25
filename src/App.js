@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import AirsigmetChart from "src/components/AirsigmetChart";
+import AirsigmetChart from "src/components/AirSigmetChart";
 
 function App() {
   const [icao, setIcao] = useState("");
@@ -285,7 +285,7 @@ function App() {
       )}
     </div>
   );
-}
+
 
 return (
     <div style={{ maxWidth: 700, margin: "40px auto", padding: 20, fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#333" }}>
