@@ -1,26 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
-const LoadingSpinner = () => (
-  <div style={{ textAlign: "center", marginTop: 20 }}>
-    <div className="spinner" />
-    <style>{`
-      .spinner {
-        margin: auto;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #004aad;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg);}
-        100% { transform: rotate(360deg);}
-      }
-    `}</style>
-  </div>
-);
+import AirsigmetChart from "src/components/AirsigmetChart";
 
 function App() {
   const [icao, setIcao] = useState("");
@@ -302,6 +282,26 @@ function App() {
         >
           {JSON.stringify(data, null, 2)}
         </pre>
+      )}
+    </div>
+  );
+}
+
+return (
+    <div style={{ maxWidth: 700, margin: "40px auto", padding: 20, fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: "#333" }}>
+      {/* Existing UI */}
+      
+      {/* Fetch Button and Error message */}
+
+      {/* Show JSON data or D3 visualization */}
+      {dataType === "airsigmet" && data ? (
+        <AirsigmetChart data={data} />
+      ) : (
+        data && (
+          <pre style={{ marginTop: 20, padding: 20, background: "#f9f9f9", borderRadius: 8, whiteSpace: "pre-wrap", wordWrap: "break-word", fontFamily: "monospace", fontSize: 14 }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )
       )}
     </div>
   );
