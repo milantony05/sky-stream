@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const LoadingSpinner = () => (
+  <div style={{ textAlign: "center", marginTop: 20 }}>
+    <div className="spinner" />
+    <style>{`
+      .spinner {
+        margin: auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #004aad;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+      }
+    `}</style>
+  </div>
+);
+
 function App() {
   const [icao, setIcao] = useState("");
   const [dataType, setDataType] = useState("airsigmet");
@@ -37,15 +58,34 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Aviation Weather Data</h1>
+    <div
+      style={{
+        maxWidth: 700,
+        margin: "40px auto",
+        padding: 20,
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        color: "#333",
+        backgroundColor: "#f7f9fc",
+        borderRadius: 8,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h1 style={{ textAlign: "center", color: "#004aad" }}>
+        Aviation Weather Data
+      </h1>
 
-      <label>
+      <label style={{ fontWeight: "600", display: "block", marginBottom: 10 }}>
         Select Data Type:
         <select
           value={dataType}
           onChange={(e) => setDataType(e.target.value)}
-          style={{ marginLeft: 10 }}
+          style={{
+            marginLeft: 10,
+            padding: 8,
+            borderRadius: 4,
+            border: "1px solid #ccc",
+            fontSize: 16,
+          }}
         >
           <option value="airsigmet">AIR/SIGMET (US)</option>
           <option value="sigmet">ISIGMET (International)</option>
@@ -57,29 +97,85 @@ function App() {
 
       {(dataType === "metar" || dataType === "taf" || dataType === "pirep") && (
         <div style={{ marginTop: 10 }}>
-          <label>
+          <label style={{ fontWeight: "600" }}>
             ICAO Code:
             <input
               type="text"
               value={icao}
               onChange={(e) => setIcao(e.target.value)}
-              style={{ marginLeft: 10, textTransform: "uppercase" }}
+              style={{
+                marginLeft: 10,
+                textTransform: "uppercase",
+                padding: 8,
+                fontSize: 16,
+                borderRadius: 4,
+                border: "1px solid #ccc",
+                width: 100,
+              }}
               maxLength={4}
+              placeholder="e.g., KMCI"
             />
           </label>
         </div>
       )}
 
-      <div style={{ marginTop: 20 }}>
-        <button onClick={fetchData} disabled={loading}>
+      <div style={{ marginTop: 20, textAlign: "center" }}>
+        <button
+          onClick={fetchData}
+          disabled={loading}
+          style={{
+            padding: "12px 30px",
+            fontSize: 18,
+            fontWeight: "700",
+            backgroundColor: "#004aad",
+            color: "white",
+            borderRadius: 6,
+            border: "none",
+            cursor: loading ? "default" : "pointer",
+            transition: "background-color 0.3s ease",
+          }}
+          onMouseEnter={(e) =>
+            !loading && (e.currentTarget.style.backgroundColor = "#00337f")
+          }
+          onMouseLeave={(e) =>
+            !loading && (e.currentTarget.style.backgroundColor = "#004aad")
+          }
+        >
           {loading ? "Loading..." : "Fetch Data"}
         </button>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p
+          style={{
+            marginTop: 20,
+            color: "crimson",
+            fontWeight: "700",
+            textAlign: "center",
+          }}
+        >
+          {error}
+        </p>
+      )}
 
-      {data && (
-        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word", marginTop: 20 }}>
+      {loading && <LoadingSpinner />}
+
+      {data && !loading && (
+        <pre
+          style={{
+            marginTop: 20,
+            whiteSpace: "pre-wrap",
+            wordWrap: "break-word",
+            backgroundColor: "#fff",
+            padding: 20,
+            borderRadius: 8,
+            maxHeight: "60vh",
+            overflowY: "auto",
+            fontFamily: "monospace",
+            fontSize: 14,
+            boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)",
+          }}
+        >
           {JSON.stringify(data, null, 2)}
         </pre>
       )}
