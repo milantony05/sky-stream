@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import AirsigmetChart from "src/components/AirSigmetChart";
-
+import AirsigmetChart from './components/AirSigmetChart';
 function App() {
   const [icao, setIcao] = useState("");
   const [dataType, setDataType] = useState("airsigmet");
