@@ -29,6 +29,14 @@ function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Advanced PIREP specific states
+  const [pirepId, setPirepId] = useState("KLAX");
+  const [distance, setDistance] = useState(10000);
+  const [age, setAge] = useState(1.5);
+  const [level, setLevel] = useState(3000);
+  const [inten, setInten] = useState("lgt");
+  const [date, setDate] = useState("2025-09-20T00:00:00Z");
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -37,15 +45,28 @@ function App() {
     try {
       let url = `http://127.0.0.1:8000/${dataType}`;
 
-      // Append ICAO for endpoints that require it
-      const icaoRequiredEndpoints = ["metar", "pirep", "taf"];
-      if (icaoRequiredEndpoints.includes(dataType)) {
-        if (!icao) {
-          setError("ICAO code is required for this data type");
-          setLoading(false);
-          return;
+      // Handle advanced PIREP separately
+      if (dataType === "pirep-advanced") {
+        const params = new URLSearchParams({
+          id: pirepId,
+          distance,
+          age,
+          level,
+          inten,
+          date,
+        }).toString();
+        url += `/advanced?${params}`;
+      } else {
+        // Append ICAO for endpoints that require it
+        const icaoRequiredEndpoints = ["metar", "pirep", "taf"];
+        if (icaoRequiredEndpoints.includes(dataType)) {
+          if (!icao) {
+            setError("ICAO code is required for this data type");
+            setLoading(false);
+            return;
+          }
+          url += `/${icao.toUpperCase()}`;
         }
-        url += `/${icao.toUpperCase()}`;
       }
 
       const response = await axios.get(url);
@@ -60,7 +81,7 @@ function App() {
   return (
     <div
       style={{
-        maxWidth: 700,
+        maxWidth: 720,
         margin: "40px auto",
         padding: 20,
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -74,7 +95,13 @@ function App() {
         Aviation Weather Data
       </h1>
 
-      <label style={{ fontWeight: "600", display: "block", marginBottom: 10 }}>
+      <label
+        style={{
+          fontWeight: "600",
+          display: "block",
+          marginBottom: 10,
+        }}
+      >
         Select Data Type:
         <select
           value={dataType}
@@ -90,32 +117,129 @@ function App() {
           <option value="airsigmet">AIR/SIGMET (US)</option>
           <option value="sigmet">ISIGMET (International)</option>
           <option value="metar">METAR</option>
-          <option value="pirep">PIREP</option>
+          <option value="pirep">PIREP (Simple)</option>
           <option value="taf">TAF</option>
+          <option value="pirep-advanced">PIREP Advanced</option>
         </select>
       </label>
 
-      {(dataType === "metar" || dataType === "taf" || dataType === "pirep") && (
-        <div style={{ marginTop: 10 }}>
-          <label style={{ fontWeight: "600" }}>
-            ICAO Code:
-            <input
-              type="text"
-              value={icao}
-              onChange={(e) => setIcao(e.target.value)}
-              style={{
-                marginLeft: 10,
-                textTransform: "uppercase",
-                padding: 8,
-                fontSize: 16,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                width: 100,
-              }}
-              maxLength={4}
-              placeholder="e.g., KMCI"
-            />
-          </label>
+      {/* ICAO input for endpoints that need it except advanced pirep */}
+      {dataType !== "pirep-advanced" &&
+        (dataType === "metar" || dataType === "taf" || dataType === "pirep") && (
+          <div style={{ marginTop: 10 }}>
+            <label style={{ fontWeight: "600" }}>
+              ICAO Code:
+              <input
+                type="text"
+                value={icao}
+                onChange={(e) => setIcao(e.target.value)}
+                style={{
+                  marginLeft: 10,
+                  textTransform: "uppercase",
+                  padding: 8,
+                  fontSize: 16,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  width: 100,
+                }}
+                maxLength={4}
+                placeholder="e.g., KMCI"
+              />
+            </label>
+          </div>
+        )}
+
+      {/* Advanced PIREP inputs */}
+      {dataType === "pirep-advanced" && (
+        <div
+          style={{
+            marginTop: 20,
+            padding: 15,
+            border: "1px solid #ccc",
+            borderRadius: 8,
+            backgroundColor: "#e9f0fa",
+          }}
+        >
+          <h3 style={{ color: "#004aad" }}>Advanced PIREP Parameters</h3>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              ID (ICAO Code):{" "}
+              <input
+                type="text"
+                value={pirepId}
+                maxLength={4}
+                onChange={(e) => setPirepId(e.target.value.toUpperCase())}
+                style={{ marginLeft: 10, padding: 6, width: 120 }}
+                placeholder="KLAX"
+              />
+            </label>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              Distance (NM):{" "}
+              <input
+                type="number"
+                value={distance}
+                onChange={(e) => setDistance(e.target.value)}
+                style={{ marginLeft: 10, padding: 6, width: 120 }}
+              />
+            </label>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              Age (hours):{" "}
+              <input
+                type="number"
+                step="0.1"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                style={{ marginLeft: 10, padding: 6, width: 120 }}
+              />
+            </label>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              Level (feet):{" "}
+              <input
+                type="number"
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                style={{ marginLeft: 10, padding: 6, width: 120 }}
+              />
+            </label>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              Intensity:{" "}
+              <select
+                value={inten}
+                onChange={(e) => setInten(e.target.value)}
+                style={{ marginLeft: 10, padding: 6, width: 130 }}
+              >
+                <option value="lgt">Light</option>
+                <option value="mod">Moderate</option>
+                <option value="sev">Severe</option>
+                <option value="ext">Extreme</option>
+              </select>
+            </label>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <label>
+              Date (ISO 8601):{" "}
+              <input
+                type="datetime-local"
+                value={date.slice(0, 16)}
+                onChange={(e) => setDate(e.target.value + ":00Z")}
+                style={{ marginLeft: 10, padding: 6, width: 230 }}
+              />
+            </label>
+          </div>
         </div>
       )}
 
